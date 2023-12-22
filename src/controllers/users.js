@@ -1,54 +1,51 @@
 const connection = require('../db/index');
 const moment = require('moment')
 
-    // 获取用户列表
-    exports.getUserslist = function (req, res) {
-        const sql = 'SELECT id, age, name, address, birthdate FROM users_table where state = ?';
-        connection.query(sql, 1, function (err, result) {
-            if (err) {
-                console.log('[SELECT ERROR] - ', err.message);
-                return;
-            }
-            result.forEach(item => {
-                item.birthdate = moment(item.birthdate).format('YYYY-MM-DD')
-            })
-            const apiRes = {
-                code: 200,
-                message: "成功",
-                data: result
-            }
-            res.send(apiRes)
-        });
+// 获取用户列表
+exports.getUserslist = function (req, res) {
+    const sql = 'SELECT id, age, name, address, birthdate FROM users_table where state = ?';
+    connection.query(sql, 1, function (err, result) {
+        if (err) {
+            console.log('[SELECT ERROR] - ', err.message);
+            return;
+        }
+        result.forEach(item => {
+            item.birthdate = moment(item.birthdate).format('YYYY-MM-DD')
+        })
+        const apiRes = {
+            code: 200,
+            message: "成功",
+            data: result
+        }
+        res.send(apiRes)
+    });
 
-        // connection.end();  MYsql nodejs 出现错误之 Cannot enqueue Query after invoking quit.
-    }
+    // connection.end();  MYsql nodejs 出现错误之 Cannot enqueue Query after invoking quit.
+}
 
 // 添加用户
 exports.addUsers = function (req, res) {
-    console.log(req.body);
-    const { id, age, name, address, birthdate } = req.body;
+    const { age, name, address, birthdate } = req.body;
     const sql = `INSERT INTO users_table (age, name, address, birthdate, state) VALUES(?,?,?,?,?)`;
     connection.query(sql, [age, name, address, moment(birthdate).format('YYYY-MM-DD'), 1], function (err, result) {
         if (err) {
             console.log('[INSERT ERROR] - ', err.message);
             return;
         }
+        let apiRes = {};
         if (result.affectedRows == 1) {
-            let apiRes = {
+            apiRes = {
                 code: 0,
                 message: "成功",
                 data: "恭喜您，新增成功啦..."
             }
-            res.send(apiRes)
         } else {
-            let apiRes = {
+            apiRes = {
                 code: 0,
                 message: "失败",
                 data: "抱歉新增失败"
             }
-            res.send(apiRes)
         }
-
         res.send(apiRes)
     });
 
