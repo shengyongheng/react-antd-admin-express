@@ -69,6 +69,24 @@ exports.deleteUsers = function (req, res) {
     });
 }
 
+// 修改用户信息
+exports.updateUsers = function (req, res) {
+    const { age, name, address, birthdate, id } = req.body;
+    console.log(req.body, 'req.body');
+    const sql = 'UPDATE users_table SET age = ?,name = ?,birthdate = ?,address = ? where id = ?';
+    connection.query(sql, [age, name, moment(birthdate).format('YYYY-MM-DD'), address, id], function (err) {
+        if (err) {
+            console.log('[UPDATE ERROR] - ', err.message);
+            return;
+        }
+        const apiRes = {
+            code: 200,
+            message: "修改成功",
+        }
+        res.send(apiRes)
+    });
+}
+
 // 获取用户详细信息
 exports.getUsersDetail = function (req, res) {
     const id = req.query.id;
